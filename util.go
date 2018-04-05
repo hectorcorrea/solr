@@ -15,7 +15,8 @@ func QsAddRaw(param, value string) string {
 	return fmt.Sprintf("%s=%s&", param, value)
 }
 
-// Extracts a value from a query string (uses defValue if not found)
+// Extracts the first value from a query string key
+// (uses defValue if not found)
 func QsGet(qs url.Values, key string, defValue string) string {
 	if len(qs[key]) == 0 {
 		return defValue

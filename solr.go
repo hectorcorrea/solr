@@ -35,6 +35,7 @@ func (s Solr) Get(params GetParams) (Document, error) {
 	return raw.Data.Documents[0], err
 }
 
+// Issues a search with the values indicated in the paramers
 func (s Solr) Search(params SearchParams) (SearchResponse, error) {
 	url := s.CoreUrl + "/select?" + params.toSolrQueryString()
 	raw, err := s.httpGet(url)
@@ -42,6 +43,15 @@ func (s Solr) Search(params SearchParams) (SearchResponse, error) {
 		return SearchResponse{}, err
 	}
 	return NewSearchResponse(params, raw), err
+}
+
+// Issues a search for the text indicated and using only
+// Solr default values
+func (s Solr) SearchText(text string) (SearchResponse, error) {
+	options := map[string]string{}
+	facets := map[string]string{}
+	params := NewSearchParams(text, options, facets)
+	return s.Search(params)
 }
 
 func (s Solr) httpGet(url string) (responseRaw, error) {

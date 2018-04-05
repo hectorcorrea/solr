@@ -20,7 +20,7 @@ type SearchParams struct {
 // 	`qs` is typically req.URL.Query()
 // 	`options` to pass to Solr (e.g. defType: "edismax")
 // 	`facets` to request from Solr (e.g. fieldName: "Field Name")
-func NewSearchParams(qs url.Values, options map[string]string,
+func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 	facets map[string]string) SearchParams {
 
 	params := SearchParams{
@@ -30,6 +30,24 @@ func NewSearchParams(qs url.Values, options map[string]string,
 		FilterQueries: NewFilterQueries(qs["fq"]),
 		Options:       options,
 		Facets:        NewFacets(facets),
+	}
+	return params
+}
+
+// NewSearchParams from a search string. You cannot set filter queries or
+// other parameters with this option. But you can set them on the returned
+// object.
+//
+// 	`q` value to pass to Solr's q parameter.
+// 	`options` to pass to Solr (e.g. defType: "edismax")
+// 	`facets` to request from Solr (e.g. fieldName: "Field Name")
+func NewSearchParams(q string, options map[string]string,
+	facets map[string]string) SearchParams {
+
+	params := SearchParams{
+		Q:       q,
+		Options: options,
+		Facets:  NewFacets(facets),
 	}
 	return params
 }
