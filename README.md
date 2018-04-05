@@ -1,8 +1,21 @@
 # Solr
-A Solr client written in Go. This client is geared towards supporting a web
-user interface that queries and filters via facets.
+A Solr client written in Go.
 
-## Basic examples of use
+This client is geared towards supporting a web user interface that queries and filters via facets. This package provides a lot of the functionality to know what facets the user is filtering on and allow the user interface to add and remove more facets to the existing search.
+
+Project https://github.com/hectorcorrea/solrdora is an example of a complete web application using this package.
+
+
+## Source code
+
+* `solr.go`: the main entry point, functions `Get()` and `Search()` are defined here.
+* `getParams.go`: parameter for the `Search()` function.
+* `searchParams.go`: parameter for the `Search()` function.
+* `searchResponse.go`: the object used to represent the results of a `Search()`
+* `filterQueries.go`: represent the `fq` values passed to Solr.
+
+
+## Examples of use (basic)
 
 Search for documents
 ```
