@@ -14,7 +14,9 @@ type SearchParams struct {
 	Options       map[string]string
 }
 
-// NewSearchParams from a query string
+// NewSearchParams from a query string. Will pick up several known
+// values from the query string (e.g. q, rows, start, fq)
+//
 // 	`qs` is typically req.URL.Query()
 // 	`options` to pass to Solr (e.g. defType: "edismax")
 // 	`facets` to request from Solr (e.g. fieldName: "Field Name")
@@ -43,7 +45,7 @@ func (params SearchParams) toSolrQueryString() string {
 		qs += QsAddInt("start", params.Start)
 	}
 
-	if params.Rows > 0 {
+	if params.Rows != 10 {
 		qs += QsAddInt("rows", params.Rows)
 	}
 

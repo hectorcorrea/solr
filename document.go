@@ -2,7 +2,6 @@ package solr
 
 import (
 	"fmt"
-	// "log"
 )
 
 type Document map[string]interface{}
