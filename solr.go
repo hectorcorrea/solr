@@ -14,7 +14,7 @@ type Solr struct {
 	Verbose bool
 }
 
-func NewSolr(coreUrl string, verbose bool) Solr {
+func New(coreUrl string, verbose bool) Solr {
 	return Solr{CoreUrl: coreUrl, Verbose: verbose}
 }
 
