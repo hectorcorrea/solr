@@ -87,6 +87,13 @@ func (s Solr) httpGet(url string) (responseRaw, error) {
 			msg := fmt.Sprintf("Solr Error. %#v", response.Error)
 			err = errors.New(msg)
 		}
+	} else {
+		if len(r.Header["Content-Type"]) > 0 {
+			// Perhaps the response was not in JSON
+			// (e.g. if Solr returns XML by default)
+			msg := fmt.Sprintf("%s. Solr's response Content-Type: %s", err, r.Header["Content-Type"])
+			err = errors.New(msg)
+		}
 	}
 	return response, err
 }
