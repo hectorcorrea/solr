@@ -75,3 +75,6 @@ for i, doc := results.Documents {
   log.Printf("%d %v", i, doc)
 }
 ```
+
+A full-blow example using this library can be found in the
+[SolrDora](https://github.com/hectorcorrea/solrdora) repo.
