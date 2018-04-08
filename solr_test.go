@@ -47,8 +47,8 @@ func TestSearchParamsUrl(t *testing.T) {
 	params.Fl = []string{"a", "b", "c"}
 	qs = params.toSolrQueryString()
 	if !strings.Contains(qs, "facet=on&") ||
-		!strings.Contains(qs, "facet.field=faA&f.faA.facet.mincount=1&") ||
-		!strings.Contains(qs, "facet.field=faB&f.faB.facet.mincount=1&") {
+		!strings.Contains(qs, "facet.field=faA&") ||
+		!strings.Contains(qs, "facet.field=faB&") {
 		t.Errorf("Unexpected SearchParams (facets) URL: %s", qs)
 	}
 }

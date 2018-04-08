@@ -1,8 +1,6 @@
 package solr
 
 import (
-	"fmt"
-	"net/url"
 	"strings"
 )
 
@@ -66,9 +64,8 @@ func (facets Facets) toQueryString() string {
 		qs += QsAdd("facet", "on")
 		for _, f := range facets {
 			qs += QsAdd("facet.field", f.Field)
-			min_count := fmt.Sprintf("f.%s.facet.mincount", url.QueryEscape(f.Field))
-			qs += QsAdd(min_count, "1")
-			// TODO account for facetLimit
+			// The rest of the facet filters (mincount, limit, offset)
+			// must be defined by th client.
 		}
 	}
 	return qs
