@@ -1,5 +1,7 @@
 package solr
 
+import "strings"
+
 type Highlight struct {
 	Field  string
 	Values []string
@@ -70,9 +72,13 @@ func (r SearchResponse) HitsForField(id, field string) []string {
 func (r SearchResponse) HitForField(id, field string) string {
 	values := r.HitsForField(id, field)
 	if len(values) > 0 {
-		return values[0]
+		return strings.Join(values, " ")
 	}
 	return ""
+}
+
+func (r SearchResponse) IsHitField(id, field string) bool {
+	return len(r.HitsForField(id, field)) > 0
 }
 
 func (r SearchResponse) toQueryString(q string, start int) string {
