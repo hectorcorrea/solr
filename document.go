@@ -2,6 +2,7 @@ package solr
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type Document map[string]interface{}
@@ -22,10 +23,11 @@ func (d Document) Value(fieldName string) string {
 // Returns all the values in multi-value field
 func (d Document) Values(fieldName string) []string {
 	var values []string
-	valuesRaw, ok := d[fieldName].([]interface{})
-	if ok {
-		for _, v := range valuesRaw {
-			values = append(values, fmt.Sprintf("%s", v))
+	dynamicValue := reflect.ValueOf(d[fieldName])
+	if dynamicValue.Kind() == reflect.Slice {
+		for i := 0; i < dynamicValue.Len(); i++ {
+			strValue := fmt.Sprintf("%s", dynamicValue.Index(i))
+			values = append(values, strValue)
 		}
 	}
 	return values
