@@ -1,13 +1,23 @@
 package solr
 
+type Highlight struct {
+	Field  string
+	Values []string
+}
+
 type SearchResponse struct {
-	Params      SearchParams
-	Q           string
-	NumFound    int
-	Start       int
-	Rows        int
-	Documents   []Document
-	Facets      Facets
+	Params    SearchParams
+	Q         string
+	NumFound  int
+	Start     int
+	Rows      int
+	Documents []Document
+	Facets    Facets
+	// Ideally the highlight information should hang from the
+	// Document (rather than SearchResponse) but I really want
+	// to keep the document as map[string]interface{} for now.
+	// I might change that in the future.
+	Highlight   map[string][]Highlight
 	Url         string // URL to execute this search
 	UrlNoQ      string // URL to execute this response without the Q parameter
 	NextPageUrl string // URL to get the next batch of results
@@ -22,6 +32,16 @@ func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		Start:     raw.Data.Start,
 		Rows:      params.Rows,
 		Documents: raw.Data.Documents,
+		Highlight: map[string][]Highlight{},
+	}
+
+	for docId, row := range raw.Highlighting {
+		hits := []Highlight{}
+		for k, v := range row {
+			hit := Highlight{Field: k, Values: v}
+			hits = append(hits, hit)
+		}
+		r.Highlight[docId] = hits
 	}
 
 	r.Facets = r.facetsFromResponse(raw.FacetCounts)
@@ -32,6 +52,27 @@ func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 	r.PrevPageUrl = r.toQueryString(r.Q, r.Start-r.Rows)
 
 	return r
+}
+
+func (r SearchResponse) HitsForDoc(id string) []Highlight {
+	return r.Highlight[id]
+}
+
+func (r SearchResponse) HitsForField(id, field string) []string {
+	for _, hit := range r.Highlight[id] {
+		if hit.Field == field {
+			return hit.Values
+		}
+	}
+	return []string{}
+}
+
+func (r SearchResponse) HitForField(id, field string) string {
+	values := r.HitsForField(id, field)
+	if len(values) > 0 {
+		return values[0]
+	}
+	return ""
 }
 
 func (r SearchResponse) toQueryString(q string, start int) string {

@@ -17,16 +17,20 @@ type dataRaw struct {
 	Documents []Document `json:"docs"`
 }
 
+// fieldname: [value1, value2, ...]
+type highlightRow map[string][]string
+
 type errorRaw struct {
 	Trace string `json:"trace"`
 	Code  int    `json:"code"`
 }
 
 type responseRaw struct {
-	Header      headerRaw      `json:"responseHeader"`
-	Data        dataRaw        `json:"response"`
-	Error       errorRaw       `json:"error"`
-	FacetCounts facetCountsRaw `json:"facet_counts"`
+	Header       headerRaw               `json:"responseHeader"`
+	Data         dataRaw                 `json:"response"`
+	Error        errorRaw                `json:"error"`
+	FacetCounts  facetCountsRaw          `json:"facet_counts"`
+	Highlighting map[string]highlightRow `json:"highlighting"`
 }
 
 type facetCountsRaw struct {
