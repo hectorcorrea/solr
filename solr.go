@@ -32,7 +32,7 @@ func (s Solr) Get(params GetParams) (Document, error) {
 		msg := fmt.Sprintf("More than one document was found (Q=%s)", params.Q)
 		return Document{}, errors.New(msg)
 	}
-	return raw.Data.Documents[0], err
+	return NewDocumentFromSolrDoc(raw.Data.Documents[0]), err
 }
 
 // Issues a search with the values indicated in the paramers

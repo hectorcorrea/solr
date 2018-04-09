@@ -4,6 +4,8 @@ import (
 	"net/url"
 )
 
+const defaultRows = 10
+
 type SearchParams struct {
 	Q             string
 	Fl            []string
@@ -25,7 +27,7 @@ func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 
 	params := SearchParams{
 		Q:             QsGet(qs, "q", "*"),
-		Rows:          QsGetInt(qs, "rows", 10),
+		Rows:          QsGetInt(qs, "rows", defaultRows),
 		Start:         QsGetInt(qs, "start", 0),
 		FilterQueries: NewFilterQueries(qs["fq"]),
 		Options:       options,
@@ -49,6 +51,7 @@ func NewSearchParams(q string, options map[string]string,
 		Options: options,
 		Facets:  NewFacets(facets),
 	}
+	params.Rows = defaultRows
 	return params
 }
 
@@ -63,7 +66,7 @@ func (params SearchParams) toSolrQueryString() string {
 		qs += QsAddInt("start", params.Start)
 	}
 
-	if params.Rows != 10 {
+	if params.Rows != defaultRows {
 		qs += QsAddInt("rows", params.Rows)
 	}
 

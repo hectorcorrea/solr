@@ -78,4 +78,6 @@ func TestSearchTextData(t *testing.T) {
 	if results.NumFound == 0 {
 		t.Errorf("No results found for q: %s", q)
 	}
+
+	// t.Errorf("doc[0]: %v", results.Documents[0].FieldValues["id"])
 }

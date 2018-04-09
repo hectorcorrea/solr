@@ -5,10 +5,10 @@ import (
 )
 
 func TestDocument(t *testing.T) {
-	d := Document{}
-	d["single"] = "hello"
-	d["multi-interface"] = []interface{}{"i1", "i2"}
-	d["multi-string"] = []string{"s1", "s2"}
+	d := NewDocument()
+	d.Data["single"] = "hello"
+	d.Data["multi-interface"] = []interface{}{"i1", "i2"}
+	d.Data["multi-string"] = []string{"s1", "s2"}
 
 	if s := d.Value("single"); s != "hello" {
 		t.Errorf("TestDocument unexpected value: %s", s)

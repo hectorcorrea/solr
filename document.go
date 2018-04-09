@@ -5,7 +5,27 @@ import (
 	"reflect"
 )
 
-type Document map[string]interface{}
+type Document struct {
+	Data      map[string]interface{}
+	Highlight string
+}
+
+func NewDocument() Document {
+	data := map[string]interface{}{}
+	return Document{Data: data, Highlight: "tbd"}
+}
+
+func NewDocumentFromSolrDoc(d documentRaw) Document {
+	return Document{Data: d, Highlight: "tbd"}
+}
+
+func NewDocumentFromSolrDocs(rawDocs []documentRaw) []Document {
+	docs := []Document{}
+	for _, rawDoc := range rawDocs {
+		docs = append(docs, NewDocumentFromSolrDoc(rawDoc))
+	}
+	return docs
+}
 
 // Returns the value in a single-value field
 func (d Document) Value(fieldName string) string {
@@ -13,20 +33,20 @@ func (d Document) Value(fieldName string) string {
 	// Casting to interface{} allows us to fetch the value even if it is not
 	// a string (e.g a float). The downside is that fmt.Sprintf() returns a
 	// funny value for non-strings, but at least we fetch the value.
-	value, ok := d[fieldName].(interface{})
+	value, ok := d.Data[fieldName].(interface{})
 	if ok {
 		return fmt.Sprintf("%s", value)
 	}
 	return ""
 }
 
-// Returns all the values in multi-value field
+// Returns all the values in a multi-value field
 func (d Document) Values(fieldName string) []string {
 	var values []string
-	dynamicValue := reflect.ValueOf(d[fieldName])
-	if dynamicValue.Kind() == reflect.Slice {
-		for i := 0; i < dynamicValue.Len(); i++ {
-			strValue := fmt.Sprintf("%s", dynamicValue.Index(i))
+	dynValue := reflect.ValueOf(d.Data[fieldName])
+	if dynValue.Kind() == reflect.Slice {
+		for i := 0; i < dynValue.Len(); i++ {
+			strValue := fmt.Sprintf("%s", dynValue.Index(i))
 			values = append(values, strValue)
 		}
 	}
@@ -43,7 +63,7 @@ func (d Document) FirstValue(fieldName string) string {
 }
 
 func (d Document) ValueFloat(fieldName string) float64 {
-	value, ok := d[fieldName].(float64)
+	value, ok := d.Data[fieldName].(float64)
 	if ok {
 		return value
 	}

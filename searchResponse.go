@@ -33,7 +33,7 @@ func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		NumFound:  raw.Data.NumFound,
 		Start:     raw.Data.Start,
 		Rows:      params.Rows,
-		Documents: raw.Data.Documents,
+		Documents: NewDocumentFromSolrDocs(raw.Data.Documents),
 		Highlight: map[string][]Highlight{},
 	}
 

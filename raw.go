@@ -12,10 +12,13 @@ type headerRaw struct {
 }
 
 type dataRaw struct {
-	NumFound  int        `json:"numFound"`
-	Start     int        `json:"start"`
-	Documents []Document `json:"docs"`
+	NumFound  int           `json:"numFound"`
+	Start     int           `json:"start"`
+	Documents []documentRaw `json:"docs"`
 }
+
+// Just as it comes from Solr
+type documentRaw map[string]interface{}
 
 // fieldname: [value1, value2, ...]
 type highlightRow map[string][]string
