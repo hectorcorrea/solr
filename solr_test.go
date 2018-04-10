@@ -67,17 +67,31 @@ func TestGetData(t *testing.T) {
 }
 
 // Depends on Solr running at http://localhost:8983/solr/bibdata
-func TestSearchTextData(t *testing.T) {
-	q := "title:education"
+func TestHighlights(t *testing.T) {
+	qs := url.Values{
+		"q": []string{"george"},
+	}
+	options := map[string]string{
+		"defType": "edismax",
+		"qf":      "authorsAll title",
+		"hl":      "on",
+	}
+	facets := map[string]string{}
+	params := NewSearchParamsFromQs(qs, options, facets)
+	params.Fl = []string{"id", "authorsAll", "title"}
+
 	solr := New("http://localhost:8983/solr/bibdata", false)
-	results, err := solr.SearchText(q)
+	results, err := solr.Search(params)
 	if err != nil {
 		t.Errorf("Get error: %s", err)
 	}
 
-	if results.NumFound == 0 {
-		t.Errorf("No results found for q: %s", q)
+	doc := results.Documents[0]
+	if !doc.IsHighlighted("title") {
+		t.Errorf("Expected title to be highlighted")
 	}
 
-	// t.Errorf("doc[0]: %v", results.Documents[0].FieldValues["id"])
+	if doc.IsHighlighted("authorx") {
+		t.Errorf("Unexpected field was highlighted")
+	}
 }

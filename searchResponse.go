@@ -1,25 +1,13 @@
 package solr
 
-import "strings"
-
-type Highlight struct {
-	Field  string
-	Values []string
-}
-
 type SearchResponse struct {
-	Params    SearchParams
-	Q         string
-	NumFound  int
-	Start     int
-	Rows      int
-	Documents []Document
-	Facets    Facets
-	// Ideally the highlight information should hang from the
-	// Document (rather than SearchResponse) but I really want
-	// to keep the document as map[string]interface{} for now.
-	// I might change that in the future.
-	Highlight   map[string][]Highlight
+	Params      SearchParams
+	Q           string
+	NumFound    int
+	Start       int
+	Rows        int
+	Documents   []Document
+	Facets      Facets
 	Url         string // URL to execute this search
 	UrlNoQ      string // URL to execute this response without the Q parameter
 	NextPageUrl string // URL to get the next batch of results
@@ -33,52 +21,16 @@ func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		NumFound:  raw.Data.NumFound,
 		Start:     raw.Data.Start,
 		Rows:      params.Rows,
-		Documents: NewDocumentFromSolrDocs(raw.Data.Documents),
-		Highlight: map[string][]Highlight{},
-	}
-
-	for docId, row := range raw.Highlighting {
-		hits := []Highlight{}
-		for k, v := range row {
-			hit := Highlight{Field: k, Values: v}
-			hits = append(hits, hit)
-		}
-		r.Highlight[docId] = hits
+		Documents: NewDocumentFromSolrResponse(raw),
 	}
 
 	r.Facets = r.facetsFromResponse(raw.FacetCounts)
-
 	r.Url = r.toQueryString(r.Q, r.Start)
 	r.UrlNoQ = r.toQueryString("", r.Start)
 	r.NextPageUrl = r.toQueryString(r.Q, r.Start+r.Rows)
 	r.PrevPageUrl = r.toQueryString(r.Q, r.Start-r.Rows)
 
 	return r
-}
-
-func (r SearchResponse) HitsForDoc(id string) []Highlight {
-	return r.Highlight[id]
-}
-
-func (r SearchResponse) HitsForField(id, field string) []string {
-	for _, hit := range r.Highlight[id] {
-		if hit.Field == field {
-			return hit.Values
-		}
-	}
-	return []string{}
-}
-
-func (r SearchResponse) HitForField(id, field string) string {
-	values := r.HitsForField(id, field)
-	if len(values) > 0 {
-		return strings.Join(values, " ")
-	}
-	return ""
-}
-
-func (r SearchResponse) IsHitField(id, field string) bool {
-	return len(r.HitsForField(id, field)) > 0
 }
 
 func (r SearchResponse) toQueryString(q string, start int) string {
