@@ -21,10 +21,10 @@ func NewGetParams(q string, fl []string, options map[string]string) GetParams {
 
 func (params GetParams) toSolrQueryString() string {
 	qs := ""
-	qs += QsAdd("q", params.Q)
-	qs += QsAddMany("fl", params.Fl)
+	qs += qsAdd("q", params.Q)
+	qs += qsAddMany("fl", params.Fl)
 	for k, v := range params.Options {
-		qs += QsAdd(k, v)
+		qs += qsAdd(k, v)
 	}
 	return qs
 }

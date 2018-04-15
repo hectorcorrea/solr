@@ -37,23 +37,23 @@ func (r SearchResponse) toQueryString(q string, start int) string {
 	qs := ""
 
 	if q != "" {
-		qs += QsAddRaw("q", q)
+		qs += qsAddRaw("q", q)
 	}
 
 	for _, facet := range r.Facets {
 		for _, value := range facet.Values {
 			if value.Active {
-				qs += QsAddRaw("fq", facet.Field+"|"+value.Text)
+				qs += qsAddRaw("fq", facet.Field+"|"+value.Text)
 			}
 		}
 	}
 
 	if start > 0 {
-		qs += QsAddInt("start", start)
+		qs += qsAddInt("start", start)
 	}
 
 	if r.Rows != 10 {
-		qs += QsAddInt("rows", r.Rows)
+		qs += qsAddInt("rows", r.Rows)
 	}
 	return qs
 }

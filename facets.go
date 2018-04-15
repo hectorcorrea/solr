@@ -61,9 +61,9 @@ func (ff *facetField) addValue(text string, count int, active bool) {
 func (facets Facets) toQueryString() string {
 	qs := ""
 	if len(facets) > 0 {
-		qs += QsAdd("facet", "on")
+		qs += qsAdd("facet", "on")
 		for _, f := range facets {
-			qs += QsAdd("facet.field", f.Field)
+			qs += qsAdd("facet.field", f.Field)
 			// The rest of the facet filters (mincount, limit, offset)
 			// must be defined by the client.
 		}
