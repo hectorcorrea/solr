@@ -67,6 +67,7 @@ func (s Solr) PostOne(datum map[string]interface{}) error {
 }
 
 func (s Solr) Post(data []map[string]interface{}) error {
+	contentType := "application/json"
 	params := "wt=json&commit=true"
 	url := s.CoreUrl + "/update?" + params
 	bytes, err := json.Marshal(data)
@@ -74,7 +75,39 @@ func (s Solr) Post(data []map[string]interface{}) error {
 		return err
 	}
 
-	r, err := s.httpPost(url, string(bytes))
+	r, err := s.httpPost(url, contentType, string(bytes))
+	if err != nil {
+		return err
+	}
+
+	var response responseRaw
+	err = json.Unmarshal([]byte(r), &response)
+	if err != nil {
+		return err
+	}
+
+	if response.Header.Status != 0 {
+		errorMsg := fmt.Sprintf("Solr returned status %d", response.Header.Status)
+		return errors.New(errorMsg)
+	}
+
+	return nil
+}
+
+func (s Solr) Delete(ids []string) error {
+	// notice that the request body (contentType) is in XML
+	// but the response (wt) is in JSON
+	contentType := "text/xml"
+	params := "wt=json&commit=true"
+	url := s.CoreUrl + "/update?" + params
+
+	payload := "<delete>\r\n"
+	for _, id := range ids {
+		payload += "\t<id>" + id + "</id>\r\n"
+	}
+	payload += "</delete>"
+
+	r, err := s.httpPost(url, contentType, payload)
 	if err != nil {
 		return err
 	}
@@ -144,9 +177,8 @@ func (s Solr) httpGet(url string) (responseRaw, error) {
 	return response, err
 }
 
-func (s Solr) httpPost(url, body string) (string, error) {
+func (s Solr) httpPost(url, contentType, body string) (string, error) {
 	s.log("Solr HTTP POST", url)
-	contentType := "application/json"
 	payload := bytes.NewBufferString(body)
 	r, err := http.Post(url, contentType, payload)
 	if err != nil {

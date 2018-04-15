@@ -9,7 +9,7 @@ import (
 // running at http://localhost:8983/solr/bibdata
 const solrCoreUrl = "http://localhost:8983/solr/bibdata"
 
-func TestGetData(t *testing.T) {
+func xTestGetData(t *testing.T) {
 	q := "id:00009565"
 	fl := []string{}
 	options := map[string]string{}
@@ -21,7 +21,7 @@ func TestGetData(t *testing.T) {
 	}
 }
 
-func TestHighlightsData(t *testing.T) {
+func xTestHighlightsData(t *testing.T) {
 	qs := url.Values{
 		"q": []string{"george"},
 	}
@@ -50,7 +50,7 @@ func TestHighlightsData(t *testing.T) {
 	}
 }
 
-func TestPostData(t *testing.T) {
+func xTestPostData(t *testing.T) {
 	doc := Document{
 		Data: map[string]interface{}{
 			"id":           "123",
@@ -71,5 +71,14 @@ func TestPostData(t *testing.T) {
 	err = solr.PostOne(data)
 	if err != nil {
 		t.Errorf("PostOne error: %s", err)
+	}
+}
+
+func xTestDeleteData(t *testing.T) {
+	ids := []string{"00000092", "00000093"}
+	solr := New(solrCoreUrl, false)
+	err := solr.Delete(ids)
+	if err != nil {
+		t.Errorf("PostDoc error: %s", err)
 	}
 }
