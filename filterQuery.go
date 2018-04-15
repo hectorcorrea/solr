@@ -12,12 +12,12 @@ type filterQuery struct {
 	Value string
 }
 
-type FilterQueries []filterQuery
+type filterQueries []filterQuery
 
-// NewFilterQueries creates a new object from an array ov values.
+// NewFilterQueries creates a new object from an array of values.
 // values are the "fq=x|y" that came on the query string.
-func NewFilterQueries(values []string) FilterQueries {
-	fqs := FilterQueries{}
+func newFilterQueries(values []string) filterQueries {
+	fqs := filterQueries{}
 	for _, value := range values {
 		tokens := strings.Split(value, "|")
 		if len(tokens) == 2 {
@@ -28,7 +28,7 @@ func NewFilterQueries(values []string) FilterQueries {
 	return fqs
 }
 
-func (fqs FilterQueries) HasFieldValue(field, value string) bool {
+func (fqs filterQueries) HasFieldValue(field, value string) bool {
 	for _, fq := range fqs {
 		if fq.Field == field && fq.Value == value {
 			return true
@@ -37,7 +37,7 @@ func (fqs FilterQueries) HasFieldValue(field, value string) bool {
 	return false
 }
 
-func (fqs FilterQueries) FieldValues(field string) []string {
+func (fqs filterQueries) FieldValues(field string) []string {
 	values := []string{}
 	for _, fq := range fqs {
 		if fq.Field == field {
@@ -47,7 +47,7 @@ func (fqs FilterQueries) FieldValues(field string) []string {
 	return values
 }
 
-func (fqs FilterQueries) toQueryString() string {
+func (fqs filterQueries) toQueryString() string {
 	str := ""
 	for _, fq := range fqs {
 		str += fmt.Sprintf("fq=%s&", fq.toQueryString())

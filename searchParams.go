@@ -13,7 +13,7 @@ type SearchParams struct {
 	Fl            []string
 	Rows          int
 	Start         int
-	FilterQueries FilterQueries     // Values that will be passed as the fq parameter.
+	FilterQueries filterQueries     // Values that will be passed as the fq parameter.
 	Facets        Facets            // Facets to request from Solr.
 	Options       map[string]string // Options to pass straight to Solr (e.g. defType: "edismax")
 }
@@ -30,7 +30,7 @@ func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 		Q:             qsGet(qs, "q", "*"),
 		Rows:          qsGetInt(qs, "rows", defaultRows),
 		Start:         qsGetInt(qs, "start", 0),
-		FilterQueries: NewFilterQueries(qs["fq"]),
+		FilterQueries: newFilterQueries(qs["fq"]),
 		Options:       options,
 		Facets:        newFacets(facets),
 	}
@@ -38,7 +38,7 @@ func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 }
 
 // NewSearchParams from a search string.
-func newSearchParams(q string, options map[string]string,
+func NewSearchParams(q string, options map[string]string,
 	facets map[string]string) SearchParams {
 
 	params := SearchParams{

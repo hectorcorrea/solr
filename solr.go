@@ -1,6 +1,38 @@
 // Package solr provides functions to connect to Solr and make request
 // for getting individual documents, executing searches, updating, and
 // deleteing documents.
+//
+// Most basic search usage:
+//
+// 	s := solr.New("http://localhost/solr/some-core", false)
+// 	results := s.SearchText("hello")
+// 	log.Printf("%v", results)
+//
+// Search with options:
+// 	s := solr.New("http://localhost/solr/some-core", false)
+//	qs := url.Values{
+//		"q": []string{"title:\"one two\""},
+//	}
+// 	options := map[string]interface{}{
+//		"defType": "edismax",
+// 	}
+//	facets := map[string]string{
+//		"title_str" : "Title",
+//	}
+//	params := NewSearchParams(qs, options, facets)
+//	results := s.Search(params)
+//	log.Printf("%v", results)
+//
+// Search with options from a query string (req is *http.Request
+// from a web handler)
+//
+// 	s := solr.New("http://localhost/solr/some-core", false)
+// 	options := map[string]interface{}{}
+//	facets := map[string]string{}
+//	params := NewSearchParams(req.URL.Query(), options, facets)
+//	results := s.Search(params)
+//	log.Printf("%v", results)
+//
 package solr
 
 import (
@@ -149,7 +181,7 @@ func (s Solr) Delete(ids []string) error {
 func (s Solr) SearchText(text string) (SearchResponse, error) {
 	options := map[string]string{}
 	facets := map[string]string{}
-	params := newSearchParams(text, options, facets)
+	params := NewSearchParams(text, options, facets)
 	return s.Search(params)
 }
 
