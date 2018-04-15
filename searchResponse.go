@@ -1,5 +1,11 @@
 package solr
 
+// SearchResponse stores the results of a search, including
+// the parameters used in the search, the resulting documents,
+// and facets returned by the server. It also provides the URLs
+// that could be submitted to NewSearchParamsFromQs() to re-execute
+// the search without the Q parameter or to get the previous/next
+// batch of results.
 type SearchResponse struct {
 	Params      SearchParams
 	Q           string
@@ -14,14 +20,14 @@ type SearchResponse struct {
 	PrevPageUrl string // URL to get the previous batch of results
 }
 
-func NewSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
+func newSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 	r := SearchResponse{
 		Params:    params,
 		Q:         params.Q,
 		NumFound:  raw.Data.NumFound,
 		Start:     raw.Data.Start,
 		Rows:      params.Rows,
-		Documents: NewDocumentFromSolrResponse(raw),
+		Documents: newDocumentFromSolrResponse(raw),
 	}
 
 	r.Facets = r.facetsFromResponse(raw.FacetCounts)

@@ -6,6 +6,17 @@ import (
 
 const defaultRows = 10
 
+// SearchParams represents the parameters used to issue a
+// search in Solr. Q, Fl, Rows, and Start map to the Solr
+// equivalent.
+//
+// FilterQueries represents the values that will be passed
+// to Solr as the fq parameter.
+//
+// Facets is an array with the facets to request from Solr.
+//
+// Options is map with the options to pass straight to Solr
+// (e.g. defType: "edismax")
 type SearchParams struct {
 	Q             string
 	Fl            []string
@@ -16,12 +27,11 @@ type SearchParams struct {
 	Options       map[string]string
 }
 
-// NewSearchParams from a query string. Will pick up several known
-// values from the query string (e.g. q, rows, start, fq)
+// NewSearchParams from a query string. This method will automatically
+// pickup several known parameters from the query string (q, rows,
+// start, and fq).
 //
-// 	`qs` is typically req.URL.Query()
-// 	`options` to pass to Solr (e.g. defType: "edismax")
-// 	`facets` to request from Solr (e.g. fieldName: "Field Name")
+// qs typically an instance of req.URL.Query() from a web handler.
 func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 	facets map[string]string) SearchParams {
 
@@ -36,14 +46,8 @@ func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 	return params
 }
 
-// NewSearchParams from a search string. You cannot set filter queries or
-// other parameters with this option. But you can set them on the returned
-// object.
-//
-// 	`q` value to pass to Solr's q parameter.
-// 	`options` to pass to Solr (e.g. defType: "edismax")
-// 	`facets` to request from Solr (e.g. fieldName: "Field Name")
-func NewSearchParams(q string, options map[string]string,
+// NewSearchParams from a search string.
+func newSearchParams(q string, options map[string]string,
 	facets map[string]string) SearchParams {
 
 	params := SearchParams{

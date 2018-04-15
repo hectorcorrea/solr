@@ -1,12 +1,13 @@
 package solr
 
+// Defines the options when fetching a single Solr document.
 type GetParams struct {
 	Q       string
 	Fl      []string
 	Options map[string]string
 }
 
-// NewGetParams
+// NewGetParams creates a new GetParams object:
 // 	`q` is typically "id:xyz"
 // 	`fl` list of fields to fetch
 // 	`options` to pass to Solr (e.g. defType: "edismax", wt: "json")

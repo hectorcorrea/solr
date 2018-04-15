@@ -6,27 +6,35 @@ import (
 	"strings"
 )
 
+// Represents a Solr document retrieved from Solr.
+//
+// Data is map with the field and values for each field
+// returned by Solr.
+//
+// Highlights is only populated when the document was returned
+// from a Search (i.e. not via Get).
 type Document struct {
 	Data       map[string]interface{}
 	Highlights map[string][]string
 }
 
+// Created a new Document object.
 func NewDocument() Document {
 	data := map[string]interface{}{}
 	hl := map[string][]string{}
 	return Document{Data: data, Highlights: hl}
 }
 
-func NewDocumentFromSolrDoc(data documentRaw) Document {
+func newDocumentFromSolrDoc(data documentRaw) Document {
 	hl := map[string][]string{}
 	return Document{Data: data, Highlights: hl}
 }
 
-func NewDocumentFromSolrResponse(raw responseRaw) []Document {
+func newDocumentFromSolrResponse(raw responseRaw) []Document {
 	docs := []Document{}
 	for _, rawDoc := range raw.Data.Documents {
 		// Create the document...
-		doc := NewDocumentFromSolrDoc(rawDoc)
+		doc := newDocumentFromSolrDoc(rawDoc)
 
 		// ...and attach its highlight information from the Solr response
 		for field, values := range raw.Highlighting[doc.Id()] {
@@ -66,6 +74,7 @@ func (d Document) Values(fieldName string) []string {
 	return values
 }
 
+// Returns the float value in a field.
 func (d Document) ValueFloat(fieldName string) float64 {
 	value, ok := d.Data[fieldName].(float64)
 	if ok {
@@ -74,14 +83,17 @@ func (d Document) ValueFloat(fieldName string) float64 {
 	return 0.0
 }
 
+// Returns the value of the Id field.
 func (d Document) Id() string {
 	return d.Value("id")
 }
 
+// Returns the highlights information for a given field name.
 func (d Document) HighlightsFor(field string) []string {
 	return d.Highlights[field]
 }
 
+// Returns the highlight information as a single string for a given field name.
 func (d Document) HighlightFor(field string) string {
 	values := d.Highlights[field]
 	if len(values) > 0 {
@@ -90,6 +102,7 @@ func (d Document) HighlightFor(field string) string {
 	return ""
 }
 
+// Returns true if there is highlight information for a given field name.
 func (d Document) IsHighlighted(field string) bool {
 	return len(d.Highlights[field]) > 0
 }

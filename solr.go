@@ -13,15 +13,19 @@ import (
 	"net/http"
 )
 
+// The main class to drive interaction with Solr.
 type Solr struct {
 	CoreUrl string
 	Verbose bool
 }
 
+// Creates a new instance of Solr.
+// When verbose = true it will log.Printf() the HTTP requests to Solr.
 func New(coreUrl string, verbose bool) Solr {
 	return Solr{CoreUrl: coreUrl, Verbose: verbose}
 }
 
+// Get fetches a single document from Solr.
 func (s Solr) Get(params GetParams) (Document, error) {
 	url := s.CoreUrl + "/select?" + params.toSolrQueryString()
 	raw, err := s.httpGet(url)
@@ -36,24 +40,27 @@ func (s Solr) Get(params GetParams) (Document, error) {
 		msg := fmt.Sprintf("More than one document was found (Q=%s)", params.Q)
 		return Document{}, errors.New(msg)
 	}
-	return NewDocumentFromSolrDoc(raw.Data.Documents[0]), err
+	return newDocumentFromSolrDoc(raw.Data.Documents[0]), err
 }
 
-// Issues a search with the values indicated in the paramers
+// Issues a search with the values indicated in the paramers.
 func (s Solr) Search(params SearchParams) (SearchResponse, error) {
 	url := s.CoreUrl + "/select?" + params.toSolrQueryString()
 	raw, err := s.httpGet(url)
 	if err != nil {
 		return SearchResponse{}, err
 	}
-	return NewSearchResponse(params, raw), err
+	return newSearchResponse(params, raw), err
 }
 
+// Updates a single document in Solr with the data in the
+// document provided.
 func (s Solr) PostDoc(doc Document) error {
 	docs := []Document{doc}
 	return s.PostDocs(docs)
 }
 
+// Updates an array of documents in Solr.
 func (s Solr) PostDocs(docs []Document) error {
 	// Extract the data from the documents
 	// (i.e. only the data, without the highlight properties)
@@ -64,11 +71,18 @@ func (s Solr) PostDocs(docs []Document) error {
 	return s.Post(data)
 }
 
+// Updates a single document in Solr. Uses plain Go map[string]interface{}
+// object rather than a Document object. The map key is represents
+// the field name and the map value the field value.
 func (s Solr) PostOne(datum map[string]interface{}) error {
 	data := []map[string]interface{}{datum}
 	return s.Post(data)
 }
 
+// Updates an array of documents in Solr. Uses an array of
+// plain Go map[string]interface{} object rather than an
+// array of Document objects. The map key is represents
+// the field name and the map value the field value.
 func (s Solr) Post(data []map[string]interface{}) error {
 	contentType := "application/json"
 	params := "wt=json&commit=true"
@@ -97,6 +111,7 @@ func (s Solr) Post(data []map[string]interface{}) error {
 	return nil
 }
 
+// Deleteds from Solr the documents with the IDs indicated.
 func (s Solr) Delete(ids []string) error {
 	// notice that the request body (contentType) is in XML
 	// but the response (wt) is in JSON
@@ -129,12 +144,12 @@ func (s Solr) Delete(ids []string) error {
 	return nil
 }
 
-// Issues a search for the text indicated and using only
-// Solr default values
+// Issues a search for the text indicated. Uses the server's default
+// values for all other Solr parameters.
 func (s Solr) SearchText(text string) (SearchResponse, error) {
 	options := map[string]string{}
 	facets := map[string]string{}
-	params := NewSearchParams(text, options, facets)
+	params := newSearchParams(text, options, facets)
 	return s.Search(params)
 }
 
