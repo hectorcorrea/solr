@@ -65,7 +65,7 @@ func (facets Facets) toQueryString() string {
 		for _, f := range facets {
 			qs += QsAdd("facet.field", f.Field)
 			// The rest of the facet filters (mincount, limit, offset)
-			// must be defined by th client.
+			// must be defined by the client.
 		}
 	}
 	return qs

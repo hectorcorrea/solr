@@ -6,7 +6,7 @@ type GetParams struct {
 	Options map[string]string
 }
 
-// NewSearchParams from a query string
+// NewGetParams
 // 	`q` is typically "id:xyz"
 // 	`fl` list of fields to fetch
 // 	`options` to pass to Solr (e.g. defType: "edismax", wt: "json")

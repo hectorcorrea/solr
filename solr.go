@@ -1,6 +1,7 @@
 package solr
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -45,6 +46,53 @@ func (s Solr) Search(params SearchParams) (SearchResponse, error) {
 	return NewSearchResponse(params, raw), err
 }
 
+func (s Solr) PostDoc(doc Document) error {
+	docs := []Document{doc}
+	return s.PostDocs(docs)
+}
+
+func (s Solr) PostDocs(docs []Document) error {
+	// Extract the data from the documents
+	// (i.e. only the data, without the highlight properties)
+	data := []map[string]interface{}{}
+	for _, doc := range docs {
+		data = append(data, doc.Data)
+	}
+	return s.Post(data)
+}
+
+func (s Solr) PostOne(datum map[string]interface{}) error {
+	data := []map[string]interface{}{datum}
+	return s.Post(data)
+}
+
+func (s Solr) Post(data []map[string]interface{}) error {
+	params := "wt=json&commit=true"
+	url := s.CoreUrl + "/update?" + params
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	r, err := s.httpPost(url, string(bytes))
+	if err != nil {
+		return err
+	}
+
+	var response responseRaw
+	err = json.Unmarshal([]byte(r), &response)
+	if err != nil {
+		return err
+	}
+
+	if response.Header.Status != 0 {
+		errorMsg := fmt.Sprintf("Solr returned status %d", response.Header.Status)
+		return errors.New(errorMsg)
+	}
+
+	return nil
+}
+
 // Issues a search for the text indicated and using only
 // Solr default values
 func (s Solr) SearchText(text string) (SearchResponse, error) {
@@ -55,9 +103,7 @@ func (s Solr) SearchText(text string) (SearchResponse, error) {
 }
 
 func (s Solr) httpGet(url string) (responseRaw, error) {
-	if s.Verbose {
-		log.Printf("Solr URL: %s", url)
-	}
+	s.log("Solr HTTP GET", url)
 	r, err := http.Get(url)
 	if err != nil {
 		return responseRaw{}, err
@@ -96,4 +142,24 @@ func (s Solr) httpGet(url string) (responseRaw, error) {
 		}
 	}
 	return response, err
+}
+
+func (s Solr) httpPost(url, body string) (string, error) {
+	s.log("Solr HTTP POST", url)
+	contentType := "application/json"
+	payload := bytes.NewBufferString(body)
+	r, err := http.Post(url, contentType, payload)
+	if err != nil {
+		return "", err
+	}
+
+	defer r.Body.Close()
+	respStr, err := ioutil.ReadAll(r.Body)
+	return string(respStr), nil
+}
+
+func (s Solr) log(msg1, msg2 string) {
+	if s.Verbose {
+		log.Printf("%s: %s", msg1, msg2)
+	}
 }
