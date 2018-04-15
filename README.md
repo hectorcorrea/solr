@@ -78,3 +78,5 @@ for i, doc := results.Documents {
 
 A full-blow example using this library can be found in the
 [SolrDora](https://github.com/hectorcorrea/solrdora) repo.
+
+The GoDoc documentation for this package can be found [here](https://godoc.org/github.com/hectorcorrea/solr)
