@@ -12,12 +12,12 @@ type SearchResponse struct {
 	NumFound    int
 	Start       int
 	Rows        int
-	Documents   []Document
-	Facets      Facets
-	Url         string // URL to execute this search
-	UrlNoQ      string // URL to execute this response without the Q parameter
-	NextPageUrl string // URL to get the next batch of results
-	PrevPageUrl string // URL to get the previous batch of results
+	Documents   []Document // Documents returned by Solr (including highlight information)
+	Facets      Facets     // Facet information (field, title, and values)
+	Url         string     // URL to execute this search
+	UrlNoQ      string     // URL to execute this search without the Q parameter
+	NextPageUrl string     // URL to get the next batch of results
+	PrevPageUrl string     // URL to get the previous batch of results
 }
 
 func newSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
@@ -98,8 +98,8 @@ func (r SearchResponse) facetsFromResponse(counts facetCountsRaw) Facets {
 	return facets
 }
 
-func (r SearchResponse) newFacet(field string) facetField {
-	facet := facetField{Field: field, Title: field}
+func (r SearchResponse) newFacet(field string) FacetField {
+	facet := FacetField{Field: field, Title: field}
 	for _, def := range r.Params.Facets {
 		if def.Field == facet.Field {
 			// if the field is on the facets indicated on the params

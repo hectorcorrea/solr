@@ -6,13 +6,14 @@ import (
 	"strings"
 )
 
-// Represents a Solr document retrieved from Solr.
+// Represents a document retrieved from Solr.
 //
 // Data is map with the field and values for each field
 // returned by Solr.
 //
 // Highlights is only populated when the document was returned
-// from a Search (i.e. not via Get).
+// from a Search (i.e. not via Get). When populated contains the
+// field and values that matched the search.
 type Document struct {
 	Data       map[string]interface{}
 	Highlights map[string][]string

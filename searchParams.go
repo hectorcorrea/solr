@@ -7,24 +7,15 @@ import (
 const defaultRows = 10
 
 // SearchParams represents the parameters used to issue a
-// search in Solr. Q, Fl, Rows, and Start map to the Solr
-// equivalent.
-//
-// FilterQueries represents the values that will be passed
-// to Solr as the fq parameter.
-//
-// Facets is an array with the facets to request from Solr.
-//
-// Options is map with the options to pass straight to Solr
-// (e.g. defType: "edismax")
+// search in Solr.
 type SearchParams struct {
 	Q             string
 	Fl            []string
 	Rows          int
 	Start         int
-	FilterQueries FilterQueries
-	Facets        Facets
-	Options       map[string]string
+	FilterQueries FilterQueries     // Values that will be passed as the fq parameter.
+	Facets        Facets            // Facets to request from Solr.
+	Options       map[string]string // Options to pass straight to Solr (e.g. defType: "edismax")
 }
 
 // NewSearchParams from a query string. This method will automatically
@@ -41,7 +32,7 @@ func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 		Start:         qsGetInt(qs, "start", 0),
 		FilterQueries: NewFilterQueries(qs["fq"]),
 		Options:       options,
-		Facets:        NewFacets(facets),
+		Facets:        newFacets(facets),
 	}
 	return params
 }
@@ -53,7 +44,7 @@ func newSearchParams(q string, options map[string]string,
 	params := SearchParams{
 		Q:       q,
 		Options: options,
-		Facets:  NewFacets(facets),
+		Facets:  newFacets(facets),
 	}
 	params.Rows = defaultRows
 	return params

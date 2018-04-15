@@ -4,41 +4,50 @@ import (
 	"strings"
 )
 
-type Facets []facetField
+// An array of FacetField definitions
+type Facets []FacetField
 
-type facetField struct {
-	Field  string
-	Title  string
-	Values []facetValue
+// A single facet field definition.
+type FacetField struct {
+	Field  string       // Name of the field in Solr.
+	Title  string       // Display title for the field.
+	Values []FacetValue // Values returned by Solr for this field.
 }
 
 // AddUrl and RemoveUrl are leaky abstraction since they are only
 // needed in the user interface, but declaring them here simplify
-// things a lot.
-type facetValue struct {
-	Text      string
-	Count     int
+// things a lot upstream.
+type FacetValue struct {
+	Text      string // Value returned by Solr for this field.
+	Count     int    // Number of documents that matched this field/value.
 	Active    bool   // true if we are filtering by this facet value
-	AddUrl    string // URL to add this facet (set by the client)
-	RemoveUrl string // URL to remove this facet (set by the client)
+	AddUrl    string // URL to filter by this value. See SetAddRemoveUrls()
+	RemoveUrl string // URL to remove filter by this value. See SetAddRemoveUrls()
 }
 
 // Creates a new Facets object from a map. Notice that only facetFields
-// are created in this case (i.e. no facetValues)
-func NewFacets(definitions map[string]string) Facets {
+// are created in this case (with a Field and Title, but no Values)
+func newFacets(definitions map[string]string) Facets {
 	facets := Facets{}
 	for key, value := range definitions {
-		facets.Add(key, value)
+		facets.add(key, value)
 	}
 	return facets
 }
 
-func (facets *Facets) Add(field, title string) {
-	facet := facetField{Field: field, Title: title}
+func (facets *Facets) add(field, title string) {
+	facet := FacetField{Field: field, Title: title}
 	*facets = append(*facets, facet)
 }
 
-// Sets the AddUrl and RemoveUrl of the facet values for all the facets.
+// Sets the internal AddUrl and RemoveUrl of the facet values for
+// all the facets using the provided baseUrl.
+//
+// AddUrl is a URL that can be used in NewSearchParamsFromQs() to create
+// a search filtering by the field/value of the facet.
+//
+// RemoveUrl is a URL that can be used in NewSearchParamsFromQs() to create
+// a search not filtering by this field/value in the search.
 func (facets Facets) SetAddRemoveUrls(baseUrl string) {
 	for _, facet := range facets {
 		for i, value := range facet.Values {
@@ -49,8 +58,8 @@ func (facets Facets) SetAddRemoveUrls(baseUrl string) {
 	}
 }
 
-func (ff *facetField) addValue(text string, count int, active bool) {
-	value := facetValue{
+func (ff *FacetField) addValue(text string, count int, active bool) {
+	value := FacetValue{
 		Text:   text,
 		Count:  count,
 		Active: active,

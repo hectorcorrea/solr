@@ -1,16 +1,13 @@
 package solr
 
-// Defines the options when fetching a single Solr document.
+// GetParams represents the parameters used to get a single Solr document.
 type GetParams struct {
-	Q       string
-	Fl      []string
-	Options map[string]string
+	Q       string            // Typically "id:xyz"
+	Fl      []string          // Fields to fetch from Solr.
+	Options map[string]string // Options to pass straight to Solr (e.g. defType: "edismax")
 }
 
-// NewGetParams creates a new GetParams object:
-// 	`q` is typically "id:xyz"
-// 	`fl` list of fields to fetch
-// 	`options` to pass to Solr (e.g. defType: "edismax", wt: "json")
+// Creates a new GetParams object
 func NewGetParams(q string, fl []string, options map[string]string) GetParams {
 	params := GetParams{
 		Q:       q,
