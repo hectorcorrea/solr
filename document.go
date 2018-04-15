@@ -8,7 +8,7 @@ import (
 
 // Represents a document retrieved from Solr.
 //
-// Data is map with the field and values for each field
+// Data is a map with the field and values for each field
 // returned by Solr.
 //
 // Highlights is only populated when the document was returned

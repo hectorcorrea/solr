@@ -2,6 +2,13 @@
 // for getting individual documents, executing searches, updating, and
 // deleteing documents.
 //
+// This package is geared towards supporting a web user interface that
+// queries and filters Solr via facets. As such it provides functionality
+// to handle the typical request-response workflow of a web application.
+// For example SearchResponse provides URLs to re-execute a search and
+// handle pagination, likewise the Facets returned in a SearchResponse
+// include URLs to add or remove a filter for a given facet field/value.
+//
 // Most basic search usage:
 //
 // 	s := solr.New("http://localhost/solr/some-core", false)
