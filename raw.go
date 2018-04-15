@@ -1,8 +1,8 @@
+package solr
+
 // The *Raw structs are used to unmarshall the JSON from Solr
 // via Go's built-in functions. They are not exposed outside
 // the solr package.
-package solr
-
 type headerRaw struct {
 	Status int `json:"status"`
 	QTime  int `json:"QTime"`

@@ -1,3 +1,6 @@
+// Package solr provides functions to connect to Solr and make request
+// for getting individual documents, executing searches, updating, and
+// deleteing documents.
 package solr
 
 import (
