@@ -64,6 +64,14 @@ func New(coreUrl string, verbose bool) Solr {
 	return Solr{CoreUrl: coreUrl, Verbose: verbose}
 }
 
+func (s Solr) Count() (int, error) {
+	options := map[string]string{"rows": "0", "defType": "edismax", "wt": "json"}
+	facets := map[string]string{}
+	params := NewSearchParams("*", options, facets)
+	r, err := s.Search(params)
+	return r.NumFound, err
+}
+
 // Get fetches a single document from Solr.
 func (s Solr) Get(params GetParams) (Document, error) {
 	url := s.CoreUrl + "/select?" + params.toSolrQueryString()
