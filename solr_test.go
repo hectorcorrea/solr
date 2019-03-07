@@ -52,3 +52,15 @@ func TestSearchParamsUrl(t *testing.T) {
 		t.Errorf("Unexpected SearchParams (facets) URL: %s", qs)
 	}
 }
+
+func TestFacets(t *testing.T) {
+	value := FacetValue{Text: "b&w", Count: 2}
+	values := []FacetValue{value}
+	facet := FacetField{Field: "f1", Title: "t1", Values: values}
+	facets := Facets{facet}
+	facets.SetAddRemoveUrls("/?")
+	// Make sure the value is added encoded to the URL
+	if facets[0].Values[0].AddUrl != "/?&fq=f1|b%26w&" {
+		t.Errorf("Invalid facet AddURL: %s", facets[0].Values[0].AddUrl)
+	}
+}
