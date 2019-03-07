@@ -52,9 +52,10 @@ func (facets *Facets) add(field, title string) {
 func (facets Facets) SetAddRemoveUrls(baseUrl string) {
 	for _, facet := range facets {
 		for i, value := range facet.Values {
-			fqVal := "fq=" + facet.Field + "|" + url.QueryEscape(value.Text) + "&"
-			facet.Values[i].RemoveUrl = strings.Replace(baseUrl, fqVal, "", 1)
-			facet.Values[i].AddUrl = baseUrl + "&" + fqVal
+			fqValRaw := "fq=" + facet.Field + "|" + value.Text + "&"
+			facet.Values[i].RemoveUrl = strings.Replace(baseUrl, fqValRaw, "", 1)
+			fqValEncoded := "fq=" + facet.Field + "|" + url.QueryEscape(value.Text) + "&"
+			facet.Values[i].AddUrl = baseUrl + "&" + fqValEncoded
 		}
 	}
 }
