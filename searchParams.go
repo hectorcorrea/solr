@@ -18,9 +18,9 @@ type SearchParams struct {
 	Options       map[string]string // Options to pass straight to Solr (e.g. defType: "edismax")
 }
 
-// NewSearchParams from a query string. This method will automatically
-// pickup several known parameters from the query string (q, rows,
-// start, and fq).
+// NewSearchParamsFromQs creates a SearchParams object from a query string.
+// This method will automatically pickup several known parameters from the
+// query string (q, rows, start, and fq).
 //
 // qs typically an instance of req.URL.Query() from a web handler.
 func NewSearchParamsFromQs(qs url.Values, options map[string]string,
@@ -32,7 +32,7 @@ func NewSearchParamsFromQs(qs url.Values, options map[string]string,
 		Start:         qsGetInt(qs, "start", 0),
 		FilterQueries: newFilterQueries(qs["fq"]),
 		Options:       options,
-		Facets:        newFacets(facets),
+		Facets:        NewFacetsFromDefinitions(facets),
 	}
 	return params
 }
@@ -44,7 +44,7 @@ func NewSearchParams(q string, options map[string]string,
 	params := SearchParams{
 		Q:       q,
 		Options: options,
-		Facets:  newFacets(facets),
+		Facets:  NewFacetsFromDefinitions(facets),
 	}
 	params.Rows = defaultRows
 	return params
