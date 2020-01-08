@@ -1,0 +1,20 @@
+hash: 90a736371220e3b96967fd418032e3962f4ea32694bfda3250a465e7e8a922ab
+updated: 2019-11-29T15:40:13.650941669-03:00
+imports:
+- name: github.com/buger/jsonparser
+  version: ee4c978eae7efe2344eb024dd7d77918d3f7c55c
+testImports:
+- name: github.com/davecgh/go-spew
+  version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: 5d4384ee4fb2527b0a1256a821ebfc92f91efefc
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: 221dbe5ed46703ee255b1da0dec05086f5035f62
+  subpackages:
+  - assert
+- name: gopkg.in/yaml.v2
+  version: 1f64d6156d11335c3f22d9330b0ad14fc1e789ce

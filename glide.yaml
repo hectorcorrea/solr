@@ -1,0 +1,8 @@
+package: stash.uol.intranet/pdeng/solr-lib
+import:
+- package: github.com/buger/jsonparser
+testImport:
+- package: github.com/stretchr/testify
+  version: ~1.4.0
+  subpackages:
+  - assert
