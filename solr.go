@@ -221,10 +221,7 @@ func (s Solr) httpGet(url string) (responseRaw, error) {
 		return responseRaw{}, errors.New(msg)
 	}
 
-	// log.Printf("Body: %s", body)
-
-	var response responseRaw
-	err = json.Unmarshal([]byte(body), &response)
+	response, err := NewResponseRaw([]byte(body))
 	if err == nil {
 		// HTTP request was successful but Solr reported an error.
 		if response.Error.Trace != "" {

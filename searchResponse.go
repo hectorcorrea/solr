@@ -18,6 +18,7 @@ type SearchResponse struct {
 	UrlNoQ      string     // URL to execute this search without the Q parameter
 	NextPageUrl string     // URL to get the next batch of results
 	PrevPageUrl string     // URL to get the previous batch of results
+	Raw         string
 }
 
 func newSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
@@ -28,6 +29,7 @@ func newSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		Start:     raw.Data.Start,
 		Rows:      params.Rows,
 		Documents: newDocumentFromSolrResponse(raw),
+		Raw:       raw.Raw,
 	}
 
 	r.Facets = r.facetsFromResponse(raw.FacetCounts)
