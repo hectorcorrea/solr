@@ -32,7 +32,18 @@ func newSearchResponse(params SearchParams, raw responseRaw) SearchResponse {
 		Raw:       raw.Raw,
 	}
 
-	r.Facets = r.facetsFromResponse(raw.FacetCounts)
+	// Make sure the facets in the results are ordered according
+	// to the facets in the request.
+	unorderedFacets := r.facetsFromResponse(raw.FacetCounts)
+	orderedFacets := Facets{}
+	for _, facetDef := range params.Facets {
+		facet, found := unorderedFacets.ForField(facetDef.Field)
+		if found {
+			orderedFacets = append(orderedFacets, facet)
+		}
+	}
+
+	r.Facets = orderedFacets
 	r.Url = r.toQueryString(r.Q, r.Start)
 	r.UrlNoQ = r.toQueryString("", r.Start)
 	r.NextPageUrl = r.toQueryString(r.Q, r.Start+r.Rows)

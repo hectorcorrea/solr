@@ -9,10 +9,11 @@ Project https://github.com/hectorcorrea/solrdora is an example of a complete web
 ## Source code
 
 * `solr.go`: the main entry point, functions `Get()` and `Search()` are defined here.
-* `getParams.go`: parameter for the `Search()` function.
+* `getParams.go`: parameter for the `Get()` function.
 * `searchParams.go`: parameter for the `Search()` function.
 * `searchResponse.go`: the object used to represent the results of a `Search()`
 * `filterQueries.go`: represent the `fq` values passed to Solr.
+* `document.go`: represents a document retrieved from Solr via `Search()` or `Get()`.
 
 
 ## Examples of use (basic)

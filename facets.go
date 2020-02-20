@@ -2,16 +2,19 @@ package solr
 
 import (
 	"net/url"
+	"sort"
+	"strconv"
 	"strings"
 )
 
-// An array of FacetField definitions
+// Facets is an array of FacetField definitions
 type Facets []FacetField
 
-// A single facet field definition.
+// FacetField represents a single facet field definition.
 type FacetField struct {
 	Field  string       // Name of the field in Solr.
 	Title  string       // Display title for the field.
+	Order  int          // Order of this field on the Facets
 	Values []FacetValue // Values returned by Solr for this field.
 }
 
@@ -26,19 +29,40 @@ type FacetValue struct {
 	RemoveUrl string // URL to remove filter by this value. See SetAddRemoveUrls()
 }
 
-// Creates a new Facets object from a map. Notice that only facetFields
-// are created in this case (with a Field and Title, but no Values)
-func newFacets(definitions map[string]string) Facets {
+// NewFacetsFromDefinitions creates a new Facets object from a map.
+// Notice that only facetFields are created in this case (with a Field
+// and Title, but no Values)
+//
+// If the Title for a definition is in the form "N|xxx" N is used as the
+// order of the facet in the list.
+func NewFacetsFromDefinitions(definitions map[string]string) Facets {
 	facets := Facets{}
 	for key, value := range definitions {
-		facets.add(key, value)
+		tokens := strings.Split(value, "|")
+		if len(tokens) < 2 {
+			//no order indicated
+			facets.add(key, value, 0)
+		} else {
+			order, _ := strconv.Atoi(tokens[0])
+			facets.add(key, tokens[1], order)
+		}
 	}
+	sort.Slice(facets, func(i, j int) bool { return facets[i].Order < facets[j].Order })
 	return facets
 }
 
-func (facets *Facets) add(field, title string) {
-	facet := FacetField{Field: field, Title: title}
+func (facets *Facets) add(field, title string, order int) {
+	facet := FacetField{Field: field, Title: title, Order: order}
 	*facets = append(*facets, facet)
+}
+
+func (facets *Facets) ForField(field string) (FacetField, bool) {
+	for _, facet := range *facets {
+		if facet.Field == field {
+			return facet, true
+		}
+	}
+	return FacetField{}, false
 }
 
 // Sets the internal AddUrl and RemoveUrl of the facet values for
