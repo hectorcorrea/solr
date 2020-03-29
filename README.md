@@ -26,7 +26,7 @@ solr := solr.New("http://localhost:8983/solr/your-core")
 results, err := solr.SearchText(q)
 
 log.Printf("Documents found: %d", results.NumFound)
-for i, doc := results.Documents {
+for i, doc := range results.Documents {
   log.Printf("%d %v", i, doc)
 }
 ```
@@ -72,7 +72,7 @@ solr := solr.New("http://localhost:8983/solr/your-core")
 results, err := solr.Search(params)
 
 log.Printf("Documents found: %d", results.NumFound)
-for i, doc := results.Documents {
+for i, doc := range results.Documents {
   log.Printf("%d %v", i, doc)
 }
 ```

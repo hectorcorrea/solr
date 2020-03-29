@@ -1,5 +1,7 @@
 package solr
 
+import "encoding/json"
+
 // The *Raw structs are used to unmarshall the JSON from Solr
 // via Go's built-in functions. They are not exposed outside
 // the solr package.
@@ -34,6 +36,17 @@ type responseRaw struct {
 	Error        errorRaw                `json:"error"`
 	FacetCounts  facetCountsRaw          `json:"facet_counts"`
 	Highlighting map[string]highlightRow `json:"highlighting"`
+	Raw          string                  `json:"raw"`
+}
+
+func NewResponseRaw(rawBytes []byte) (responseRaw, error) {
+	var response responseRaw
+	err := json.Unmarshal([]byte(rawBytes), &response)
+	if err != nil {
+		return response, err
+	}
+	response.Raw = string(rawBytes)
+	return response, nil
 }
 
 type facetCountsRaw struct {
