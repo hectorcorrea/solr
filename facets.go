@@ -76,9 +76,9 @@ func (facets *Facets) ForField(field string) (FacetField, bool) {
 func (facets Facets) SetAddRemoveUrls(baseUrl string) {
 	for _, facet := range facets {
 		for i, value := range facet.Values {
-			fqValRaw := "fq=" + facet.Field + "|" + value.Text + "&"
-			facet.Values[i].RemoveUrl = strings.Replace(baseUrl, fqValRaw, "", 1)
+			// fqValRaw := "fq=" + facet.Field + "|" + value.Text + "&"
 			fqValEncoded := "fq=" + facet.Field + "|" + url.QueryEscape(value.Text) + "&"
+			facet.Values[i].RemoveUrl = strings.Replace(baseUrl, fqValEncoded, "", 1)
 			facet.Values[i].AddUrl = baseUrl + "&" + fqValEncoded
 		}
 	}

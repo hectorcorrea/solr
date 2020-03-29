@@ -21,7 +21,9 @@ func newFilterQueries(values []string) filterQueries {
 	for _, value := range values {
 		tokens := strings.Split(value, "|")
 		if len(tokens) == 2 {
-			fq := filterQuery{Field: tokens[0], Value: tokens[1]}
+			// value := url.QueryEscape(tokens[1])
+			value := tokens[1]
+			fq := filterQuery{Field: tokens[0], Value: value}
 			fqs = append(fqs, fq)
 		}
 	}

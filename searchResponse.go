@@ -1,5 +1,7 @@
 package solr
 
+import "net/url"
+
 // SearchResponse stores the results of a search, including
 // the parameters used in the search, the resulting documents,
 // and facets returned by the server. It also provides the URLs
@@ -60,7 +62,8 @@ func (r SearchResponse) toQueryString(q string, start int) string {
 	for _, facet := range r.Facets {
 		for _, value := range facet.Values {
 			if value.Active {
-				qs += qsAddRaw("fq", facet.Field+"|"+value.Text)
+				valueEnc := url.QueryEscape(value.Text)
+				qs += qsAddRaw("fq", facet.Field+"|"+valueEnc)
 			}
 		}
 	}
