@@ -9,8 +9,6 @@ import (
 // running at http://localhost:8983/solr/bibdata
 const solrCoreUrl = "http://localhost:8983/solr/bibdata"
 
-// const solrCoreUrl = "http://localhost:8081/solr/blacklight-core"
-
 func xTestCount(t *testing.T) {
 	solr := New(solrCoreUrl, true)
 	_, err := solr.Count()

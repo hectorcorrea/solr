@@ -126,20 +126,28 @@ func (s Solr) PostOne(datum map[string]interface{}) error {
 	return s.Post(data)
 }
 
-// Updates an array of documents in Solr. Uses an array of
-// plain Go map[string]interface{} object rather than an
-// array of Document objects. The map key is represents
+// Post issues an HTTP POST to Solr with data data of the
+// documents indicated in the data parameter.
+//
+// The parameter data is a plain Go map[string]interface{} object
+// rather than an array of Document objects. The map key represents
 // the field name and the map value the field value.
 func (s Solr) Post(data []map[string]interface{}) error {
-	contentType := "application/json"
-	params := "wt=json&commit=true"
-	url := s.CoreUrl + "/update?" + params
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
+	return s.PostString(string(bytes))
+}
 
-	r, err := s.httpPost(url, contentType, string(bytes))
+// PostString issues an HTTP POST the `/update` handler to update or
+// add one or more documents to Solr. The string is assummed to be
+// a valid representation of one or more documents.
+func (s Solr) PostString(data string) error {
+	contentType := "application/json"
+	params := "wt=json&commit=true"
+	url := s.CoreUrl + "/update?" + params
+	r, err := s.httpPost(url, contentType, data)
 	if err != nil {
 		return err
 	}
@@ -158,7 +166,7 @@ func (s Solr) Post(data []map[string]interface{}) error {
 	return nil
 }
 
-// Deleteds from Solr the documents with the IDs indicated.
+// Deletes from Solr the documents with the IDs indicated.
 func (s Solr) Delete(ids []string) error {
 	// notice that the request body (contentType) is in XML
 	// but the response (wt) is in JSON
