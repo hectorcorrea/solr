@@ -83,9 +83,18 @@ func xTestPostData(t *testing.T) {
 }
 
 func xTestDeleteData(t *testing.T) {
-	ids := []string{"00000092", "00000093"}
 	solr := New(solrCoreUrl, false)
-	err := solr.Delete(ids)
+	data := map[string]interface{}{
+		"id":     "00000092",
+		"author": "ninety-two",
+	}
+	err := solr.PostOne(data)
+	if err != nil {
+		t.Errorf("PostOne error: %s", err)
+	}
+
+	ids := []string{"00000092", "00000093"}
+	err = solr.Delete(ids)
 	if err != nil {
 		t.Errorf("PostDoc error: %s", err)
 	}

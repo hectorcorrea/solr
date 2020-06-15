@@ -166,19 +166,28 @@ func (s Solr) PostString(data string) error {
 	return nil
 }
 
+// Deletes from Solr all the documents
+func (s Solr) DeleteAll() error {
+	payload := "<delete><query>*:*</query></delete>"
+	return s.deletePayload(payload)
+}
+
 // Deletes from Solr the documents with the IDs indicated.
 func (s Solr) Delete(ids []string) error {
-	// notice that the request body (contentType) is in XML
-	// but the response (wt) is in JSON
-	contentType := "text/xml"
-	params := "wt=json&commit=true"
-	url := s.CoreUrl + "/update?" + params
-
 	payload := "<delete>\r\n"
 	for _, id := range ids {
 		payload += "\t<id>" + id + "</id>\r\n"
 	}
 	payload += "</delete>"
+	return s.deletePayload(payload)
+}
+
+func (s Solr) deletePayload(payload string) error {
+	// notice that the request body (contentType) is in XML
+	// but the response (wt) is in JSON
+	contentType := "text/xml"
+	params := "wt=json&commit=true"
+	url := s.CoreUrl + "/update?" + params
 
 	r, err := s.httpPost(url, contentType, payload)
 	if err != nil {
